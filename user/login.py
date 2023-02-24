@@ -1,8 +1,17 @@
 import asyncio
 import os
+from os.path
+
+from telethon import TelegramClient, events
+
+from .. import API_HASH, API_ID, BOT, PROXY_START, PROXY_TYPE, connectionType, jdbot, chat_id, CONFIG_DIR
+from ..bot.utils import V4
+import os
+import asyncio
 from telethon import events, Button
-from .. import BOT,  PROXY_TYPE, chat_id, jdbot, user
-from ..bot.utils import press_event, V4, row, split_list
+
+from .. import chat_id, jdbot
+from ..bot.utils import press_event, row, split_list
 
 # 兼容青龙新版目录
 try:
@@ -25,7 +34,15 @@ elif PROXY_TYPE == "MTProxy":
     proxy = (BOT['proxy_add'], BOT['proxy_port'], BOT['proxy_secret'])
 else:
     proxy = (BOT['proxy_type'], BOT['proxy_add'], BOT['proxy_port'])
-
+# 开启tg对话
+if PROXY_START and BOT.get('noretry') and BOT['noretry']:
+    user = TelegramClient(f'{CONFIG_DIR}/user', API_ID, API_HASH, connection=connectionType, proxy=proxy)
+elif PROXY_START:
+    user = TelegramClient(f'{CONFIG_DIR}/user', API_ID, API_HASH, connection=connectionType, proxy=proxy, connection_retries=None)
+elif BOT.get('noretry') and BOT['noretry']:
+    user = TelegramClient(f'{CONFIG_DIR}/user', API_ID, API_HASH)
+else:
+    user = TelegramClient(f'{CONFIG_DIR}/user', API_ID, API_HASH, connection_retries=None)
 
 
 def restart():
@@ -34,7 +51,7 @@ def restart():
 
 
 def start():
-    file = "/jd/config/botset.json" if V4 else f"{QLMain}/config/botset.json"
+    file =  f"{QLMain}/config/botset.json"
     with open(file, "r", encoding="utf-8") as f1:
         botset = f1.read()
     botset = botset.replace('user": "False"', 'user": "True"')
@@ -44,7 +61,7 @@ def start():
 
 
 def close():
-    file = "/jd/config/botset.json" if V4 else f"{QLMain}/config/botset.json"
+    file =  f"{QLMain}/config/botset.json"
     with open(file, "r", encoding="utf-8") as f1:
         botset = f1.read()
     botset = botset.replace('user": "True"', 'user": "False"')
@@ -54,21 +71,20 @@ def close():
 
 
 def state():
-    file = "/jd/config/botset.json" if V4 else f"{QLMain}/config/botset.json"
+    file =  f"{QLMain}/config/botset.json"
     with open(file, "r", encoding="utf-8") as f1:
         botset = f1.read()
     if 'user": "True"' in botset:
         return True
     else:
         return False
-    
 
 @jdbot.on(events.NewMessage(from_users=chat_id, pattern=r'^/user$'))
 async def user_login(event):
     try:
         login = False
         sender = event.sender_id
-        session = "/jd/config/user.session" if V4 else f"{QLMain}/config/user.session"
+        session =  f"{QLMain}/config/user.session"
         async with jdbot.conversation(sender, timeout=120) as conv:
             msg = await conv.send_message("请做出你的选择")
             buttons = [
@@ -81,7 +97,7 @@ async def user_login(event):
             res = bytes.decode(convdata.data)
             if res == 'cancel':
                 await jdbot.edit_message(msg, '对话已取消')
-                # return
+                return
             elif res == 'close':
                 await jdbot.edit_message(msg, "关闭成功，准备重启机器人！")
                 close()
@@ -106,5 +122,5 @@ async def user_login(event):
         await jdbot.edit_message(msg, '登录已超时，对话已停止')
     except Exception as e:
         await jdbot.send_message(chat_id, '登录失败\n 再重新登录\n' + str(e))
-    # finally:
-    #     await user.disconnect()
+    finally:
+        await user.disconnect()
