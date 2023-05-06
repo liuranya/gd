@@ -1,9 +1,9 @@
 from telethon import events
 
 # from .login import user
-from .. import user
+from .. import client
 
-@user.on(events.NewMessage(pattern=r'^id$', outgoing=True))
+@client.on(events.NewMessage(pattern=r'^id$', outgoing=True))
 async def check_id(event):
     message = await event.get_reply_message()
     text = f"此消息ID：`{str(event.message.id)}`\n\n"
