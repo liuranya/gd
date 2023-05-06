@@ -4,12 +4,9 @@ import asyncio
 import re
 import os
 import json
-try:
-    from .login import user
-except:
-    from .. import user
+from .. import client
     
-@user.on(events.NewMessage(pattern=r'^cb', outgoing=True))
+@client.on(events.NewMessage(pattern=r'^cb', outgoing=True))
 async def CCBeanInfo(event):
     msg_text= event.raw_text.split(' ')
     if isinstance(msg_text, list) and len(msg_text) == 2:
