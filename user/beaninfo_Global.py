@@ -8,8 +8,9 @@ import json
 try:
     from .login import user
 except:
-    from .. import user
+    from .. import client
     
+user = client
 @user.on(events.NewMessage(pattern=r'^setbd', outgoing=True))
 async def SetBeanDetailInfo(event):
     try:
