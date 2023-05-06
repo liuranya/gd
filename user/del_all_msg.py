@@ -1,10 +1,8 @@
 from telethon import events
 
-# from .login import user
-# from .login import user
-from .. import user
+from .. import client
 
-@user.on(events.NewMessage(pattern=r'^dat$', outgoing=True))
+@client.on(events.NewMessage(pattern=r'^dat$', outgoing=True))
 async def dat(context):
     input_chat = await context.get_input_chat()
     messages = []
