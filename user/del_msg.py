@@ -3,9 +3,9 @@ import time
 from telethon import events
 
 # from .login import user
-from .. import user
+from .. import client
 
-@user.on(events.NewMessage(pattern=r'^del[ 0-9]*$', outgoing=True))
+@client.on(events.NewMessage(pattern=r'^del[ 0-9]*$', outgoing=True))
 async def del_msg(event):
     try:
         num = event.raw_text.split(' ')
