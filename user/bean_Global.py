@@ -6,7 +6,7 @@ import subprocess
 from ..bot.beandata import get_bean_data
 from ..bot.utils import V4,split_list, press_event
 from uuid import uuid4
-from .login import user
+from .. import client
 
 BEAN_IN_FILE = f'{LOG_DIR}/bean_income-{uuid4()}.csv'
 BEAN_OUT_FILE = f'{LOG_DIR}/bean_outlay-{uuid4()}.csv'
@@ -15,7 +15,7 @@ BEAN_IMG = f'{LOG_DIR}/bean-{uuid4()}.jpg'
 FONT_FILE = f'{BOT_DIR}/font/jet.ttf'
 
 
-@user.on(events.NewMessage(pattern=r'^bb', outgoing=True))
+@client.on(events.NewMessage(pattern=r'^bb', outgoing=True))
 async def bot_bean(event):
     msg_text= event.raw_text.split(' ')
     if isinstance(msg_text, list) and len(msg_text) == 2:
