@@ -3,12 +3,9 @@ import requests
 import json
 import os
 import asyncio
-try:
-    from .login import user
-except:
-    from .. import user
+from .. import client
     
-@user.on(events.NewMessage(pattern=r'.*天气$', outgoing=True))
+@client.on(events.NewMessage(pattern=r'.*天气$', outgoing=True))
 async def weatherInfo(event):
 
     #载入设定
